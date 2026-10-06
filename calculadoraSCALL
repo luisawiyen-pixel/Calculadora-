@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora SCALL Pro | Hidrología y Captación</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #070b14;
+    }
+    .neon-border-cyan:focus-within {
+      border-color: #06b6d4;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+    }
+    .neon-border-blue:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.35);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-radial-at-t from-slate-900 via-[#070b14] to-[#04070e]">
+
+  <div class="max-w-7xl mx-auto space-y-8">
+    
+    <!-- Encabezado Principal con Estilo Neón -->
+    <header class="relative p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-2xl backdrop-blur-xl overflow-hidden">
+      <div class="absolute -top-16 -left-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -top-16 -right-16 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="space-y-2 text-center sm:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-400 text-xs font-semibold uppercase tracking-wider shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            Ingeniería Hidrológica Aplicada
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center justify-center sm:justify-start gap-3">
+            Calculadora SCALL Mensual
+          </h1>
+          <p class="text-slate-400 text-sm max-w-2xl">
+            Determinación del potencial pluvial mensual (<strong class="text-cyan-400">POTCALL</strong>), demanda doméstica (<strong class="text-blue-400">ACH</strong>), balance hidrológico, dimensionamiento de cisterna y ahorro tarifario.
+          </p>
+        </div>
+
+        <!-- Indicador de Precipitación Promedio -->
+        <div class="flex items-center gap-4 bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-md">
+          <div class="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13v6m-4-4v4m8-2v2"></path></svg>
+          </div>
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Base Climática</div>
+            <div class="text-sm font-semibold text-white">Promedio Histórico 4 Años</div>
+            <div class="text-xs text-cyan-400 font-medium">12 Meses Registrados</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Panel Izquierdo: Formulario de Parámetros -->
+      <section class="lg:col-span-4 space-y-6">
+        
+        <div class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-2xl backdrop-blur-md space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-slate-800 text-cyan-400 border border-slate-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+              </span>
+              Variables de Cálculo
+            </h2>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">Paso 1 y 2</span>
+          </div>
+
+          <!-- Módulo POTCALL -->
+          <div class="space-y-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <h3 class="text-xs font-bold text-cyan-300 uppercase tracking-widest">1. Parámetros de Captación (POTCALL)</h3>
+            </div>
+
+            <!-- Entrada Área -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-slate-300 flex items-center gap-2">
+                <span class="text-cyan-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"></path></svg>
+                </span>
+                Área de Techo / Cubierta (m²)
+              </label>
+              <div class="relative neon-border-cyan rounded-xl transition-all">
+                <input type="number" id="area" value="64" min="1" step="1" class="w-full bg-slate-950/90 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                <span class="absolute right-3.5 top-2.5 text-xs text-slate-500 font-bold">m²</span>
+              </div>
+            </div>
+
+            <!-- Entrada Coeficiente CE / Tipo de Techo -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-slate-300 flex items-center gap-2">
+                <span class="text-cyan-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                </span>
+                Material de Techo y Coeficiente (CE)
+              </label>
+              <select id="tipoTecho" class="w-full bg-slate-950/90 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 cursor-pointer">
+                <option value="0.95">Lámina de metal / Galvanizada (CE: 0.95)</option>
+                <option value="0.90">Lámina traslúcida / Policarbonato (CE: 0.90)</option>
+                <option value="0.85">Losa de concreto impermeabilizada (CE: 0.85)</option>
+                <option value="0.80">Losa de concreto estándar (CE: 0.80)</option>
+                <option value="0.75">Teja de barro esmaltada (CE: 0.75)</option>
+                <option value="0.60">Teja de barro rústica (CE: 0.60)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Módulo ACH -->
+          <div class="space-y-4 pt-2 border-t border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest">2. Demanda del Hogar (ACH)</h3>
+            </div>
+
+            <!-- Entrada Habitantes -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-slate-300 flex items-center gap-2">
+                <span class="text-blue-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </span>
+                Número de Personas (Hacinamiento)
+              </label>
+              <div class="relative neon-border-blue rounded-xl transition-all">
+                <input type="number" id="habitantes" value="3" min="1" max="50" class="w-full bg-slate-950/90 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-blue-300 font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <span class="absolute right-3.5 top-2.5 text-xs text-slate-500 font-bold">personas</span>
+              </div>
+            </div>
+
+            <!-- Dotación Fija -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-slate-400 flex items-center gap-2">
+                <span class="text-blue-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                </span>
+                Dotación Diaria Reglamentaria
+              </label>
+              <div class="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-400 font-mono flex items-center justify-between">
+                <span>180 L / persona / día</span>
+                <span class="text-[10px] text-blue-400 font-bold px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800/60">Fijo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Módulo de Costos Opcional -->
+          <div class="space-y-4 pt-2 border-t border-slate-800">
+            <div class="flex items-center justify-between">
+              <label for="checkCostos" class="cursor-pointer text-xs font-bold text-emerald-300 uppercase tracking-widest flex items-center gap-2">
+                <span class="p-1 rounded bg-emerald-950/90 text-emerald-400 border border-emerald-700/60">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </span>
+                ¿Calcular Costos y Ahorro?
+              </label>
+              <input type="checkbox" id="checkCostos" class="w-5 h-5 rounded-md bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer accent-emerald-500">
+            </div>
+
+            <div id="costoContainer" class="hidden space-y-1.5 p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/20">
+              <label class="text-xs font-medium text-slate-300 flex items-center gap-2">
+                <span class="text-emerald-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </span>
+                Precio del agua de red por metro cúbico ($/m³)
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 text-xs text-emerald-500 font-bold">$</span>
+                <input type="number" id="tarifaAgua" value="28.50" min="0" step="0.5" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-7 pr-12 py-2 text-sm text-emerald-400 font-bold focus:outline-none focus:border-emerald-500">
+                <span class="absolute right-3 top-2.5 text-xs text-slate-500 font-bold">MXN</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="btnRecalcular" class="w-full py-3 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all duration-300 text-sm flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Actualizar Modelo Hidrológico
+          </button>
+        </div>
+
+      </section>
+
+      <!-- Panel Derecho: KPIs y Gráfico Combinado -->
+      <section class="lg:col-span-8 space-y-6">
+        
+        <!-- 4 Tarjetas de Métricas Clave (Resaltadas con Iconos y Colores Distintivos) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Tarjeta 1: POTCALL -->
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-cyan-500/30 shadow-lg relative overflow-hidden group hover:border-cyan-400 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Captación Anual</span>
+              <div class="w-8 h-8 rounded-xl bg-cyan-950 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shadow-inner">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+              </div>
+            </div>
+            <div id="kpiPotcall" class="text-xl font-extrabold text-cyan-400 tracking-tight">0.00 m³</div>
+            <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> POTCALL Acumulado
+            </div>
+          </div>
+
+          <!-- Tarjeta 2: ACH -->
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-blue-500/30 shadow-lg relative overflow-hidden group hover:border-blue-400 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Demanda Anual</span>
+              <div class="w-8 h-8 rounded-xl bg-blue-950 border border-blue-500/40 text-blue-400 flex items-center justify-center shadow-inner">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              </div>
+            </div>
+            <div id="kpiAch" class="text-xl font-extrabold text-blue-400 tracking-tight">0.00 m³</div>
+            <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Demanda ACH Total
+            </div>
+          </div>
+
+          <!-- Tarjeta 3: Cisterna / Almacenamiento -->
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-amber-500/30 shadow-lg relative overflow-hidden group hover:border-amber-400 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tanque Sugerido</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-950 border border-amber-500/40 text-amber-400 flex items-center justify-center shadow-inner">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+              </div>
+            </div>
+            <div id="kpiCisterna" class="text-xl font-extrabold text-amber-400 tracking-tight">0.00 m³</div>
+            <div id="kpiLitros" class="text-[10px] text-amber-500 font-bold mt-1">0 Litros</div>
+          </div>
+
+          <!-- Tarjeta 4: Ahorro -->
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-emerald-500/30 shadow-lg relative overflow-hidden group hover:border-emerald-400 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Ahorro Económico</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shadow-inner">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+            </div>
+            <div id="kpiAhorro" class="text-xl font-extrabold text-emerald-400 tracking-tight">$0.00</div>
+            <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Beneficio Anual
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Gráfica Combinada en Contenedor Oscuro -->
+        <div class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-2xl backdrop-blur-md space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span class="p-1 rounded bg-slate-800 text-cyan-400 border border-slate-700">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                </span>
+                Comportamiento Hidrológico Mensual
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Comparativa directa entre aporte por lluvia y consumo residencial</p>
+            </div>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1.5 text-cyan-300 font-medium">
+                <span class="w-3 h-3 rounded-sm bg-cyan-500"></span> Barras: POTCALL
+              </span>
+              <span class="flex items-center gap-1.5 text-blue-300 font-medium">
+                <span class="w-3 h-1 bg-blue-500 rounded"></span> Línea: ACH
+              </span>
+            </div>
+          </div>
+
+          <div class="relative h-72 sm:h-80 w-full">
+            <canvas id="scallChart"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- Tabla Detallada con Fondo Oscuro y Badges -->
+    <section class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-2xl backdrop-blur-md space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-slate-800 text-purple-400 border border-slate-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            </span>
+            Matriz de Resultados Mensuales
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Valores evaluados a 4 cifras decimales por período mensual</p>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs bg-slate-950 border border-purple-500/30 px-3 py-1.5 rounded-xl text-purple-300">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          Balance = <strong class="text-white">Demanda (ACH) ÷ Captación (POTCALL)</strong>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-xs sm:text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-950/80 text-slate-400 text-xs font-semibold uppercase tracking-wider border-b border-slate-800">
+              <th class="py-3 px-4">Mes</th>
+              <th class="py-3 px-3 text-center">Días</th>
+              <th class="py-3 px-4 text-right">Pm Histórica (mm)</th>
+              <th class="py-3 px-4 text-right text-cyan-400">POTCALL (m³)</th>
+              <th class="py-3 px-4 text-right text-blue-400">ACH (m³)</th>
+              <th class="py-3 px-4 text-right text-purple-400">Balance (Demanda/Capt.)</th>
+              <th class="py-3 px-4 text-right col-costo hidden text-emerald-400">Ahorro ($)</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody" class="divide-y divide-slate-800/60 font-mono text-xs sm:text-sm">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Registro de precipitación mensual promedio histórica de los últimos 4 años
+    const mesesData = [
+      { mes: "Enero", dias: 31, pm: 7.5 },
+      { mes: "Febrero", dias: 28, pm: 9.0 },
+      { mes: "Marzo", dias: 31, pm: 8.5 },
+      { mes: "Abril", dias: 30, pm: 14.0 },
+      { mes: "Mayo", dias: 31, pm: 42.5 },
+      { mes: "Junio", dias: 30, pm: 115.0 },
+      { mes: "Julio", dias: 31, pm: 138.5 },
+      { mes: "Agosto", dias: 31, pm: 132.0 },
+      { mes: "Septiembre", dias: 30, pm: 108.0 },
+      { mes: "Octubre", dias: 31, pm: 44.0 },
+      { mes: "Noviembre", dias: 30, pm: 12.0 },
+      { mes: "Diciembre", dias: 31, pm: 8.0 }
+    ];
+
+    const DOTACION = 180; // Litros por persona al día (constante)
+    let chartInstance = null;
+
+    // Referencias del DOM
+    const areaInput = document.getElementById('area');
+    const techoSelect = document.getElementById('tipoTecho');
+    const habInput = document.getElementById('habitantes');
+    const checkCostos = document.getElementById('checkCostos');
+    const costoContainer = document.getElementById('costoContainer');
+    const tarifaInput = document.getElementById('tarifaAgua');
+    const btnRecalcular = document.getElementById('btnRecalcular');
+    const tablaBody = document.getElementById('tablaBody');
+
+    // Gestión del contenedor de costos
+    checkCostos.addEventListener('change', () => {
+      if (checkCostos.checked) {
+        costoContainer.classList.remove('hidden');
+        document.querySelectorAll('.col-costo').forEach(el => el.classList.remove('hidden'));
+      } else {
+        costoContainer.classList.add('hidden');
+        document.querySelectorAll('.col-costo').forEach(el => el.classList.add('hidden'));
+      }
+      ejecutarCalculos();
+    });
+
+    function ejecutarCalculos() {
+      const area = parseFloat(areaInput.value) || 0;
+      const ce = parseFloat(techoSelect.value) || 0;
+      const personas = parseInt(habInput.value) || 0;
+      const conCostos = checkCostos.checked;
+      const tarifa = parseFloat(tarifaInput.value) || 0;
+
+      let labels = [];
+      let potcallArray = [];
+      let achArray = [];
+
+      let totalPotcall = 0;
+      let totalAch = 0;
+      let maxAporteMes = 0;
+      let totalAhorro = 0;
+
+      tablaBody.innerHTML = '';
+
+      mesesData.forEach((item) => {
+        labels.push(item.mes);
+
+        // POTCALL = (Área * CE * Pm) / 1000
+        const potcall = (area * ce * item.pm) / 1000;
+        potcallArray.push(potcall);
+        totalPotcall += potcall;
+
+        // ACH = (Personas * Dotación * Días) / 1000
+        const ach = (personas * DOTACION * item.dias) / 1000;
+        achArray.push(ach);
+        totalAch += ach;
+
+        // Balance = Demanda ÷ Captación
+        let balanceDisplay = "";
+        let badgeColor = "";
+        if (potcall > 0) {
+          const ratio = ach / potcall;
+          balanceDisplay = ratio.toFixed(4);
+          if (ratio <= 1.0) {
+            badgeColor = "text-emerald-400 bg-emerald-950/70 border-emerald-500/40";
+          } else if (ratio <= 2.5) {
+            badgeColor = "text-amber-400 bg-amber-950/70 border-amber-500/40";
+          } else {
+            badgeColor = "text-purple-400 bg-purple-950/70 border-purple-500/40";
+          }
+        } else {
+          balanceDisplay = "Sin captación";
+          badgeColor = "text-slate-500 bg-slate-900 border-slate-700";
+        }
+
+        // Mayor aporte mensual para calcular la cisterna
+        if (potcall > maxAporteMes) {
+          maxAporteMes = potcall;
+        }
+
+        // Ahorro económico (volumen pluvial aprovechado hasta el tope de la demanda)
+        const volumenAprovechable = Math.min(potcall, ach);
+        const ahorroMes = volumenAprovechable * tarifa;
+        totalAhorro += ahorroMes;
+
+        // Inserción en la tabla
+        const row = document.createElement('tr');
+        row.className = "hover:bg-slate-800/40 transition-colors";
+        row.innerHTML = `
+          <td class="py-3 px-4 font-sans font-bold text-slate-200">${item.mes}</td>
+          <td class="py-3 px-3 text-center text-slate-400">${item.dias}</td>
+          <td class="py-3 px-4 text-right text-slate-300">${item.pm.toFixed(1)}</td>
+          <td class="py-3 px-4 text-right text-cyan-400 font-semibold">${potcall.toFixed(4)}</td>
+          <td class="py-3 px-4 text-right text-blue-400 font-semibold">${ach.toFixed(4)}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="inline-block px-2.5 py-0.5 rounded-lg border text-xs font-bold ${badgeColor}">
+              ${balanceDisplay}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right col-costo ${conCostos ? '' : 'hidden'} text-emerald-400 font-bold">
+            $${ahorroMes.toFixed(2)}
+          </td>
+        `;
+        tablaBody.appendChild(row);
+      });
+
+      // Capacidad recomendada de almacenamiento (mes pico con un factor de resguardo del 20%)
+      const capacidadCisterna = maxAporteMes * 1.20;
+
+      // Actualizar tarjetas de resultados
+      document.getElementById('kpiPotcall').innerText = `${totalPotcall.toFixed(2)} m³`;
+      document.getElementById('kpiAch').innerText = `${totalAch.toFixed(2)} m³`;
+      document.getElementById('kpiCisterna').innerText = `${capacidadCisterna.toFixed(2)} m³`;
+      document.getElementById('kpiLitros').innerText = `${Math.round(capacidadCisterna * 1000).toLocaleString()} Litros recomendados`;
+      document.getElementById('kpiAhorro').innerText = conCostos ? `$${totalAhorro.toFixed(2)}` : '$0.00';
+
+      // Renderizar o actualizar gráfico
+      actualizarGrafico(labels, potcallArray, achArray);
+    }
+
+    function actualizarGrafico(labels, potcallData, achData) {
+      const ctx = document.getElementById('scallChart').getContext('2d');
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: 'line',
+              label: 'ACH - Demanda Doméstica (m³)',
+              data: achData,
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.15)',
+              borderWidth: 3,
+              tension: 0.25,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#60a5fa',
+              pointBorderColor: '#1d4ed8',
+              yAxisID: 'y'
+            },
+            {
+              type: 'bar',
+              label: 'POTCALL - Captación Pluvial (m³)',
+              data: potcallData,
+              backgroundColor: 'rgba(6, 182, 212, 0.65)',
+              borderColor: '#06b6d4',
+              borderWidth: 1.5,
+              borderRadius: 8,
+              yAxisID: 'y'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: '#cbd5e1',
+                font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                boxWidth: 12
+              }
+            },
+            tooltip: {
+              backgroundColor: '#0f172a',
+              titleColor: '#f8fafc',
+              bodyColor: '#e2e8f0',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 10,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.dataset.label}: ${context.parsed.y.toFixed(2)} m³`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(51, 65, 85, 0.25)' },
+              ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(51, 65, 85, 0.35)' },
+              ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } },
+              title: {
+                display: true,
+                text: 'Volumen (m³)',
+                color: '#cbd5e1',
+                font: { family: 'Plus Jakarta Sans', size: 12, weight: 'bold' }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Vinculación de eventos
+    btnRecalcular.addEventListener('click', ejecutarCalculos);
+    areaInput.addEventListener('input', ejecutarCalculos);
+    techoSelect.addEventListener('change', ejecutarCalculos);
+    habInput.addEventListener('input', ejecutarCalculos);
+    tarifaInput.addEventListener('input', ejecutarCalculos);
+
+    // Inicialización automática
+    ejecutarCalculos();
+  </script>
+</body>
+</html>
